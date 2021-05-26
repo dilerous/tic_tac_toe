@@ -22,16 +22,17 @@ class Game:
             return True
 
     def draw_win_line(self, condition):
-            pygame.draw.line(self.surface, self.board.win_color_line, (condition[1][0], condition[1][1]),
-                             (condition[2][0], condition[2][1]), self.board.line_width)
-            pygame.display.flip()
+        pygame.draw.line(self.surface, self.board.win_color_line,
+                            (condition[1][0], condition[1][1]),
+                            (condition[2][0], condition[2][1]), self.board.line_width)
+        pygame.display.flip()
 
     def new_win(self):
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
                               slice(1,9,3), slice(2,9,3), slice(0,9,4), slice(2,8,2)]
         self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
                         (10, self.board.height//1.25), (self.board.height//5, 10),
-                        (self.board.height//2, 10),(self.board.height//1.25, 10),
+                        (self.board.height//2, 10), (self.board.height//1.25, 10),
                         (10, 10),(10, self.board.height-10) ]
         self.y_cords = [ (self.board.width-10, self.board.width//5),
                         (self.board.height-10, self.board.width//2),
