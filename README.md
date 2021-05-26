@@ -17,4 +17,4 @@ Then launch the main.py file to play
 ```
 python3 main.py
 ```
-#Enjoy!
+# Enjoy!
