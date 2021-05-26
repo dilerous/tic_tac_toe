@@ -160,7 +160,6 @@ class Board:
         self.line_width = 4
         self.color_line = (255, 255, 0)
         self.win_color_line = (0, 128, 0)
-        self.board_cords = list(range(0, 9))
         self.click_middle  = pygame.Rect( self.width//3, self.height//3, self.width//3, self.height//3 )
         self.click_top_left  = pygame.Rect( self.width//40, self.height//40, self.width//3, self.height//3 )
         self.click_bottom_right  = pygame.Rect( self.width//1.5, self.height//1.5, self.width//3, self.height//3 )
