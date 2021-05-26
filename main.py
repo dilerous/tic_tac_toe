@@ -10,7 +10,8 @@ class Game:
         self.board_cords = list(range(0,9))
         self.turn_count = 0
         self.did_win = False
-        self.surface = pygame.display.set_mode((self.board.width, self.board.height))
+        self.surface = pygame.display.set_mode((self.board.width,
+                                                self.board.height))
         self.surface.fill((0, 0, 0))
         self.x_image = Ximage(self.surface)
         self.o_image = Oimage(self.surface)
@@ -24,12 +25,14 @@ class Game:
     def draw_win_line(self, condition):
         pygame.draw.line(self.surface, self.board.win_color_line,
                             (condition[1][0], condition[1][1]),
-                            (condition[2][0], condition[2][1]), self.board.line_width)
+                            (condition[2][0], condition[2][1]),
+                         self.board.line_width)
         pygame.display.flip()
 
     def new_win(self):
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
-                              slice(1,9,3), slice(2,9,3), slice(0,9,4), slice(2,8,2)]
+                              slice(1,9,3), slice(2,9,3), slice(0,9,4),
+                              slice(2,8,2)]
         self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
                         (10, self.board.height//1.25), (self.board.height//5, 10),
                         (self.board.height//2, 10), (self.board.height//1.25, 10),
@@ -161,15 +164,25 @@ class Board:
         self.line_width = 4
         self.color_line = (255, 255, 0)
         self.win_color_line = (0, 128, 0)
-        self.click_middle  = pygame.Rect( self.width//3, self.height//3, self.width//3, self.height//3 )
-        self.click_top_left  = pygame.Rect( self.width//40, self.height//40, self.width//3, self.height//3 )
-        self.click_bottom_right  = pygame.Rect( self.width//1.5, self.height//1.5, self.width//3, self.height//3 )
-        self.click_bottom_left  = pygame.Rect( self.width//40, self.height//1.5, self.width//3, self.height//3 )
-        self.click_top_right  = pygame.Rect( self.width//1.5, self.height//40, self.width//3, self.height//3 )
-        self.click_middle_right  = pygame.Rect( self.width//1.5, self.height//3, self.width//3, self.height//3 )
-        self.click_middle_left  = pygame.Rect( self.width//40, self.height//3, self.width//3, self.height//3 )
-        self.click_bottom_middle  = pygame.Rect( self.width//3, self.height//1.5, self.width//3, self.height//3 )
-        self.click_top_middle  = pygame.Rect( self.width//3, self.height//40, self.width//3, self.height//3 )
+        self.click_middle  = pygame.Rect( self.width//3, self.height//3,
+                                         self.width//3, self.height//3 )
+        self.click_top_left  = pygame.Rect( self.width//40, self.height//40,
+                                           self.width//3, self.height//3 )
+        self.click_bottom_right  = pygame.Rect( self.width//1.5,
+                                               self.height//1.5, self.width//3,
+                                               self.height//3 )
+        self.click_bottom_left  = pygame.Rect( self.width//40, self.height//1.5,
+                                              self.width//3, self.height//3 )
+        self.click_top_right  = pygame.Rect( self.width//1.5, self.height//40,
+                                            self.width//3, self.height//3 )
+        self.click_middle_right  = pygame.Rect( self.width//1.5, self.height//3,
+                                               self.width//3, self.height//3 )
+        self.click_middle_left  = pygame.Rect( self.width//40, self.height//3,
+                                              self.width//3, self.height//3 )
+        self.click_bottom_middle  = pygame.Rect( self.width//3, self.height//1.5,
+                                                self.width//3, self.height//3 )
+        self.click_top_middle  = pygame.Rect( self.width//3, self.height//40,
+                                             self.width//3, self.height//3 )
 
     def draw(self, parent_surface, board):
         self.surface = parent_surface
