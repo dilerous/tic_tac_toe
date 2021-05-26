@@ -21,62 +21,36 @@ class Game:
         if (self.turn_count % 2) == 0:
             return True
 
-    def win(self, condition):
-        if condition == slice(0, 3):
-            pygame.draw.line(self.surface, self.board.win_color_line, (10, self.board.height//5),
-                             (490, self.board.width//5), self.board.line_width)
+    def draw_win_line(self, condition):
+            pygame.draw.line(self.surface, self.board.win_color_line, (condition[1][0], condition[1][1]),
+                             (condition[2][0], condition[2][1]), self.board.line_width)
             pygame.display.flip()
-
-        elif condition == slice(3, 6):
-            pygame.draw.line(self.surface, self.board.win_color_line, (10, self.board.height//2),
-                             (490, self.board.width//2), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == slice(6, 9):
-            pygame.draw.line(self.surface, self.board.win_color_line, (10, self.board.height//1.25),
-                             (490, self.board.width//1.25), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == slice(0,9,3):
-            pygame.draw.line(self.surface, self.board.win_color_line, (self.board.height//5, 10),
-                             (self.board.width//5, 490), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == slice(0, 9, 4):
-            pygame.draw.line(self.surface, self.board.win_color_line, (10, 10),
-                             (self.board.height-10, self.board.height-10), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == slice(1, 9, 3):
-            pygame.draw.line(self.surface, self.board.win_color_line, (self.board.height//2, 10),
-                             (self.board.width//2, 490), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == slice(2, 8, 2):
-            pygame.draw.line(self.surface, self.board.win_color_line,
-                             (10, 490), (490, 10), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == slice(2, 9, 3):
-            pygame.draw.line(self.surface, self.board.win_color_line, (self.board.height//1.25, 10),
-                             (self.board.width//1.25, 490), self.board.line_width)
-            pygame.display.flip()
-
-        elif condition == "tie":
-            print("There was a tie!")
-
-        else:
-            print("Something went wrong")
 
     def new_win(self):
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
                               slice(1,9,3), slice(2,9,3), slice(0,9,4), slice(2,8,2)]
+        self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
+                        (10, self.board.height//1.25), (self.board.height//5, 10),
+                        (self.board.height//2, 10),(self.board.height//1.25, 10),
+                        (10, 10),(10, self.board.height-10) ]
+        self.y_cords = [ (self.board.width-10, self.board.width//5),
+                        (self.board.height-10, self.board.width//2),
+                        (self.board.height-10, self.board.width//1.25),
+                        (self.board.width//5, self.board.height-10),
+                        (self.board.width//2, self.board.height-10),
+                        (self.board.width//1.25, self.board.height-10),
+                        (self.board.width-10, self.board.height-10),
+                        (self.board.width, 10) ]
+        self.win_with_cords = list(zip(self.win_condition,
+                                       self.x_cords, self.y_cords))
+
         for condition in self.win_condition:
             if len(set(self.board_cords[condition])) == 1:
                 print("Winner!")
-                self.win(condition)
+                win_index = self.win_condition.index(condition)
+                self.draw_win_line(self.win_with_cords[win_index])
             elif len(set(self.board_cords[condition])) > 1 and self.turn_count == 9:
-                self.win("tie")
+                print("There was a tie, try again!")
 
     def run(self):
         while not self.did_win:
