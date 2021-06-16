@@ -4,18 +4,9 @@ print(pygame.version.ver)
 
 class Game:
     def __init__(self):
-        pygame.init()
-        pygame.display.set_caption("Tic Tac Toe")
         self.board = Board()
-        self.board_cords = list(range(0,9))
         self.turn_count = 0
         self.did_win = False
-        self.surface = pygame.display.set_mode((self.board.width,
-                                                self.board.height))
-        self.surface.fill((0, 0, 0))
-        self.x_image = Ximage(self.surface)
-        self.o_image = Oimage(self.surface)
-        self.board.draw(self.surface, self.board)
 
     def turn(self):
         self.turn_count+=1
@@ -159,11 +150,20 @@ class Game:
 
 class Board:
     def __init__(self):
+        pygame.init()
+        pygame.display.set_caption("Tic Tac Toe")
+        self.board_cords = list(range(0,9))
         self.width = 500
         self.height = 500
+        self.surface = pygame.display.set_mode((self.width, self.height))
         self.line_width = 4
+        self.surface.fill((0, 0, 0))
         self.color_line = (255, 255, 0)
         self.win_color_line = (0, 128, 0)
+        self.x_image = Ximage(self.surface)
+        self.o_image = Oimage(self.surface)
+        self.draw(self.surface)
+
         self.click_middle  = pygame.Rect( self.width//3, self.height//3,
                                          self.width//3, self.height//3 )
         self.click_top_left  = pygame.Rect( self.width//40, self.height//40,
@@ -184,7 +184,7 @@ class Board:
         self.click_top_middle  = pygame.Rect( self.width//3, self.height//40,
                                              self.width//3, self.height//3 )
 
-    def draw(self, parent_surface, board):
+    def draw(self, parent_surface):
         self.surface = parent_surface
         pygame.draw.line(self.surface, self.color_line, (0+10, self.height * .33),
                          (self.width - 10, self.height * .33),
@@ -200,6 +200,14 @@ class Board:
                          self.line_width)
         pygame.display.flip()
 
+class Playerone:
+    def __init__(self):
+        self.playerone_image = pygame.image.load("image_x_v2.bmp")
+
+
+class Playerone:
+    def __init__(self):
+        self.playertwo_image = pygame.image.load("image_o_v2.bmp")
 
 class Ximage:
     def __init__(self, parent_screen):
