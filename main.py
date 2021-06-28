@@ -5,6 +5,8 @@ print(pygame.version.ver)
 class Game:
     def __init__(self):
         self.board = Board()
+        self.playerone = Playerone()
+        self.playertwo = Playertwo()
         self.turn_count = 0
         self.did_win = False
 
@@ -55,97 +57,15 @@ class Game:
                         self.did_win = True
                 elif event.type == QUIT:
                     self.did_win = True
-                elif ( event.type == pygame.MOUSEBUTTONUP ):
+
+                # Craigs example of the for loop
+                elif event.type == pygame.MOUSEBUTTONUP:
                     mouse_position = pygame.mouse.get_pos()
-                    if ( self.board.click_middle.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 3, 3)
-                            self.board_cords[4] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 3, 3)
-                            self.board_cords[4] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_top_left.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 40, 40)
-                            self.board_cords[0] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 40, 40)
-                            self.board_cords[0] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_bottom_right.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 1.5, 1.5)
-                            self.board_cords[8] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 1.5, 1.5)
-                            self.board_cords[8] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_bottom_left.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 40, 1.5)
-                            self.board_cords[6] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 40, 1.5)
-                            self.board_cords[6] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_top_right.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 1.5, 40)
-                            self.board_cords[2] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 1.5, 40)
-                            self.board_cords[2] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_middle_right.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 1.5, 3)
-                            self.board_cords[5] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 1.5, 3)
-                            self.board_cords[5] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_middle_left.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 40, 3)
-                            self.board_cords[3] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 40, 3)
-                            self.board_cords[3] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_bottom_middle.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 3, 1.5)
-                            self.board_cords[7] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 3, 1.5)
-                            self.board_cords[7] = 'x'
-                            self.new_win()
-
-                    if ( self.board.click_top_middle.collidepoint( mouse_position ) ):   # Was that click inside our rectangle
-                        if self.turn():
-                            self.o_image.draw(self.board, 3, 40)
-                            self.board_cords[1] = 'o'
-                            self.new_win()
-                        else:
-                            self.x_image.draw(self.board, 3, 40)
-                            self.board_cords[1] = 'x'
-                            self.new_win()
+                    for item in self.board.boxes:
+                        if item.collidepoint(mouse_position):
+                            image_o_rect.center = item.center
+                            screen.blit(image_o, image_o_rect)
+                            pygame.display.flip()
 
 
 class Board:
@@ -153,67 +73,101 @@ class Board:
         pygame.init()
         pygame.display.set_caption("Tic Tac Toe")
         self.board_cords = list(range(0,9))
-        self.width = 500
-        self.height = 500
-        self.surface = pygame.display.set_mode((self.width, self.height))
-        self.line_width = 4
-        self.surface.fill((0, 0, 0))
-        self.color_line = (255, 255, 0)
-        self.win_color_line = (0, 128, 0)
-        self.x_image = Ximage(self.surface)
-        self.o_image = Oimage(self.surface)
-        self.draw(self.surface)
+        # Craigs code example
+        screen = pygame.display.set_mode((640, 480))
+        clock = pygame.time.Clock()
+        BG_COLOR = pygame.Color('gray12')
+        screen.fill(BG_COLOR)
+        self.boxes = []
+        points = []
+        buffer_px = 10
+        third_width = (640-(buffer_px*2))//3
+        third_height = (480-(buffer_px*2))//3
+        box_size = third_width, third_height
+        width_points = [buffer_px, third_width+buffer_px, (third_width*2)+buffer_px]
+        height_points = [buffer_px, third_height+buffer_px, (third_height*2)+buffer_px]
+        for hp in height_points:
+            for wp in width_points:
+                points.append((wp, hp))
 
-        self.click_middle  = pygame.Rect( self.width//3, self.height//3,
-                                         self.width//3, self.height//3 )
-        self.click_top_left  = pygame.Rect( self.width//40, self.height//40,
-                                           self.width//3, self.height//3 )
-        self.click_bottom_right  = pygame.Rect( self.width//1.5,
-                                               self.height//1.5, self.width//3,
-                                               self.height//3 )
-        self.click_bottom_left  = pygame.Rect( self.width//40, self.height//1.5,
-                                              self.width//3, self.height//3 )
-        self.click_top_right  = pygame.Rect( self.width//1.5, self.height//40,
+        for point in points:
+            box = pygame.Rect(point, box_size)
+            boxes.append(box)
+            pygame.draw.rect(screen, (0, 100, 255), box, 2)
+        pygame.display.flip()
+
+        # Original Code below
+        use_old: False
+        if use_old:
+            self.width = 500
+            self.height = 500
+            self.surface = pygame.display.set_mode((self.width, self.height))
+            self.line_width = 4
+            self.surface.fill((0, 0, 0))
+            self.color_line = (255, 255, 0)
+            self.win_color_line = (0, 128, 0)
+            self.x_image = Ximage(self.surface)
+            self.o_image = Oimage(self.surface)
+            self.draw(self.surface)
+
+            self.click_middle  = pygame.Rect( self.width//3, self.height//3,
                                             self.width//3, self.height//3 )
-        self.click_middle_right  = pygame.Rect( self.width//1.5, self.height//3,
-                                               self.width//3, self.height//3 )
-        self.click_middle_left  = pygame.Rect( self.width//40, self.height//3,
-                                              self.width//3, self.height//3 )
-        self.click_bottom_middle  = pygame.Rect( self.width//3, self.height//1.5,
+            self.click_top_left  = pygame.Rect( self.width//40, self.height//40,
+                                            self.width//3, self.height//3 )
+            self.click_bottom_right  = pygame.Rect( self.width//1.5,
+                                                self.height//1.5, self.width//3,
+                                                self.height//3 )
+            self.click_bottom_left  = pygame.Rect( self.width//40, self.height//1.5,
                                                 self.width//3, self.height//3 )
-        self.click_top_middle  = pygame.Rect( self.width//3, self.height//40,
-                                             self.width//3, self.height//3 )
+            self.click_top_right  = pygame.Rect( self.width//1.5, self.height//40,
+                                                self.width//3, self.height//3 )
+            self.click_middle_right  = pygame.Rect( self.width//1.5, self.height//3,
+                                                self.width//3, self.height//3 )
+            self.click_middle_left  = pygame.Rect( self.width//40, self.height//3,
+                                                self.width//3, self.height//3 )
+            self.click_bottom_middle  = pygame.Rect( self.width//3, self.height//1.5,
+                                                    self.width//3, self.height//3 )
+            self.click_top_middle  = pygame.Rect( self.width//3, self.height//40,
+                                                self.width//3, self.height//3 )
 
     def draw(self, parent_surface):
-        self.surface = parent_surface
-        pygame.draw.line(self.surface, self.color_line, (0+10, self.height * .33),
-                         (self.width - 10, self.height * .33),
-                         self.line_width)
-        pygame.draw.line(self.surface, self.color_line, (0+10, self.height * .66),
-                         (self.width - 10, self.height * .66),
-                         self.line_width)
-        pygame.draw.line(self.surface, self.color_line, (self.width * .33, 0+10),
-                         (self.width * .33, self.height - 10),
-                         self.line_width)
-        pygame.draw.line(self.surface, self.color_line, (self.width * .66, 0+10),
-                         (self.width * .66, self.height - 10),
-                         self.line_width)
+
         pygame.display.flip()
+        # My old draw board code
+        use_old: False
+        if use_old:
+            self.surface = parent_surface
+            pygame.draw.line(self.surface, self.color_line, (0+10, self.height * .33),
+                            (self.width - 10, self.height * .33),
+                            self.line_width)
+            pygame.draw.line(self.surface, self.color_line, (0+10, self.height * .66),
+                            (self.width - 10, self.height * .66),
+                            self.line_width)
+            pygame.draw.line(self.surface, self.color_line, (self.width * .33, 0+10),
+                            (self.width * .33, self.height - 10),
+                            self.line_width)
+            pygame.draw.line(self.surface, self.color_line, (self.width * .66, 0+10),
+                            (self.width * .66, self.height - 10),
+                            self.line_width)
+            pygame.display.flip()
 
 class Playerone:
     def __init__(self):
         self.playerone_image = pygame.image.load("image_x_v2.bmp")
-        self.playerone_rect = self.playertwo_image_get_rect()
+        self.playerone_rect = self.playerone_image.get_rect()
 
     def draw(self):
         pass
 
 
 
-class Playerone:
+class Playertwo:
     def __init__(self):
         self.playertwo_image = pygame.image.load("image_o_v2.bmp")
-        self.playertwo_rect = self.playertwo_image_get_rect()
+        self.playertwo_rect = self.playertwo_image.get_rect()
+
+    def draw(self):
+        pass
 
 class Ximage:
     def __init__(self, parent_screen):
