@@ -203,11 +203,17 @@ class Board:
 class Playerone:
     def __init__(self):
         self.playerone_image = pygame.image.load("image_x_v2.bmp")
+        self.playerone_rect = self.playertwo_image_get_rect()
+
+    def draw(self):
+        pass
+
 
 
 class Playerone:
     def __init__(self):
         self.playertwo_image = pygame.image.load("image_o_v2.bmp")
+        self.playertwo_rect = self.playertwo_image_get_rect()
 
 class Ximage:
     def __init__(self, parent_screen):
