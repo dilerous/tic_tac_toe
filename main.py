@@ -7,6 +7,7 @@ class Game:
         self.board = Board()
         self.playerone = Playerone()
         self.playertwo = Playertwo()
+        self.oimage = Oimage()
         self.turn_count = 0
         self.did_win = False
 
@@ -63,8 +64,9 @@ class Game:
                     mouse_position = pygame.mouse.get_pos()
                     for item in self.board.boxes:
                         if item.collidepoint(mouse_position):
-                            image_o_rect.center = item.center
-                            screen.blit(image_o, image_o_rect)
+                            self.oimage.image_o_rect.center = item.center
+                            self.board.screen.blit(self.oimage.image_o,
+                                                   self.oimage.image_o_rect)
                             pygame.display.flip()
 
 
@@ -74,10 +76,10 @@ class Board:
         pygame.display.set_caption("Tic Tac Toe")
         self.board_cords = list(range(0,9))
         # Craigs code example
-        screen = pygame.display.set_mode((640, 480))
+        self.screen = pygame.display.set_mode((640, 480))
         clock = pygame.time.Clock()
         BG_COLOR = pygame.Color('gray12')
-        screen.fill(BG_COLOR)
+        self.screen.fill(BG_COLOR)
         self.boxes = []
         points = []
         buffer_px = 10
@@ -92,12 +94,12 @@ class Board:
 
         for point in points:
             box = pygame.Rect(point, box_size)
-            boxes.append(box)
-            pygame.draw.rect(screen, (0, 100, 255), box, 2)
+            self.boxes.append(box)
+            pygame.draw.rect(self.screen, (0, 100, 255), box, 2)
         pygame.display.flip()
 
         # Original Code below
-        use_old: False
+        use_old = False
         if use_old:
             self.width = 500
             self.height = 500
@@ -134,7 +136,7 @@ class Board:
 
         pygame.display.flip()
         # My old draw board code
-        use_old: False
+        use_old = False
         if use_old:
             self.surface = parent_surface
             pygame.draw.line(self.surface, self.color_line, (0+10, self.height * .33),
@@ -170,31 +172,14 @@ class Playertwo:
         pass
 
 class Ximage:
-    def __init__(self, parent_screen):
-        self.parent_screen = parent_screen
+    def __init__(self):
         self.image = pygame.image.load("image_x_v2.bmp")
-        self.image_size = 60
-
-    def draw(self, board, x, y):
-        self.board = board
-        self.x = (self.board.width//x) + self.image_size
-        self.y = (self.board.height//y) + self.image_size
-        self.parent_screen.blit(self.image, (self.x, self.y))
-        pygame.display.flip()
-
 
 class Oimage:
-    def __init__(self, parent_screen):
-        self.parent_screen = parent_screen
-        self.image = pygame.image.load("image_o_v2.bmp")
-        self.image_size = 60
+    def __init__(self):
+        self.image_o = pygame.image.load("image_o_v2.bmp")
+        self.image_o_rect = self.image_o.get_rect()
 
-    def draw(self, board, x, y):
-        self.board = board
-        self.x = (self.board.width//x) + self.image_size
-        self.y = (self.board.height//y) + self.image_size
-        self.parent_screen.blit(self.image, (self.x, self.y))
-        pygame.display.flip()
 
 if __name__ == '__main__':
     game = Game()
