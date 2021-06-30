@@ -23,13 +23,15 @@ class Game:
         return true
         pass
 
-    def draw_win_line(self, condition):
-        # Cleanup
-        pygame.draw.line(self.surface, self.board.win_color_line,
-                            (condition[1][0], condition[1][1]),
-                            (condition[2][0], condition[2][1]),
-                         self.board.line_width)
-        pygame.display.flip()
+    def update_cords(self, box):
+        if self.turn():
+            icon = 'x'
+        else:
+            icon = 'o'
+        self.board_cords[box] = icon
+        self.check_win()
+        for i in self.board_cords:
+            print(i)
 
     def check_win(self):
         for condition in self.win_condition:
@@ -38,25 +40,6 @@ class Game:
                 win_index = self.win_condition.index(condition)
             elif len(set(self.board_cords[condition])) > 1 and self.turn_count == 9:
                 print("There was a tie, try again!")
-
-
-    def new_win(self):
-        self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
-                        (10, self.board.height//1.25), (self.board.height//5, 10),
-                        (self.board.height//2, 10), (self.board.height//1.25, 10),
-                        (10, 10),(10, self.board.height-10) ]
-        self.y_cords = [ (self.board.width-10, self.board.width//5),
-                        (self.board.height-10, self.board.width//2),
-                        (self.board.height-10, self.board.width//1.25),
-                        (self.board.width//5, self.board.height-10),
-                        (self.board.width//2, self.board.height-10),
-                        (self.board.width//1.25, self.board.height-10),
-                        (self.board.width-10, self.board.height-10),
-                        (self.board.width, 10) ]
-        self.win_with_cords = list(zip(self.win_condition,
-                                       self.x_cords, self.y_cords))
-
-
 
     def run(self):
         while not self.did_win:
@@ -75,8 +58,34 @@ class Game:
                             self.board.screen.blit(self.playerone.image_o,
                                                    self.playerone.image_o_rect)
                             print(self.board.boxes.index(item))
-
+                            self.update_cords(self.board.boxes.index(item))
                             pygame.display.flip()
+
+
+    def draw_win_line(self, condition):
+        # Cleanup
+        pygame.draw.line(self.surface, self.board.win_color_line,
+                            (condition[1][0], condition[1][1]),
+                            (condition[2][0], condition[2][1]),
+                         self.board.line_width)
+        pygame.display.flip()
+
+
+    def new_win(self):
+        self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
+                        (10, self.board.height//1.25), (self.board.height//5, 10),
+                        (self.board.height//2, 10), (self.board.height//1.25, 10),
+                        (10, 10),(10, self.board.height-10) ]
+        self.y_cords = [ (self.board.width-10, self.board.width//5),
+                        (self.board.height-10, self.board.width//2),
+                        (self.board.height-10, self.board.width//1.25),
+                        (self.board.width//5, self.board.height-10),
+                        (self.board.width//2, self.board.height-10),
+                        (self.board.width//1.25, self.board.height-10),
+                        (self.board.width-10, self.board.height-10),
+                        (self.board.width, 10) ]
+        self.win_with_cords = list(zip(self.win_condition,
+                                       self.x_cords, self.y_cords))
 
 
 class Board:
