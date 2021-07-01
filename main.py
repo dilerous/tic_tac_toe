@@ -23,6 +23,10 @@ class Game:
         return true
         pass
 
+    def display_text(self):
+        self.board.screen.blit(self.board.text, self.board.text_rect)
+        pygame.display.update()
+
     def update_cords(self, box):
         if self.turn():
             icon = 'x'
@@ -30,8 +34,7 @@ class Game:
             icon = 'o'
         self.board_cords[box] = icon
         self.check_win()
-        for i in self.board_cords:
-            print(i)
+        self.display_text()
 
     def check_win(self):
         for condition in self.win_condition:
@@ -49,7 +52,6 @@ class Game:
                         self.did_win = True
                 if event.type == QUIT:
                     self.did_win = True
-                # Craigs example of the for loop
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse_position = pygame.mouse.get_pos()
                     for item in self.board.boxes:
@@ -57,8 +59,8 @@ class Game:
                             self.playerone.image_o_rect.center = item.center
                             self.board.screen.blit(self.playerone.image_o,
                                                    self.playerone.image_o_rect)
-                            print(self.board.boxes.index(item))
                             self.update_cords(self.board.boxes.index(item))
+                            print(self.playerone.image_o_rect.center)
                             pygame.display.flip()
 
 
@@ -92,6 +94,9 @@ class Board:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Tic Tac Toe")
+        font = pygame.font.SysFont('freesansbold.tff', 30)
+        self.text = font.render(message, 1, (255, 255, 255))
+        self.text_rect = text.get_rect(center =(width / 2, 500-50))
         # Craigs code example
         self.screen = pygame.display.set_mode((640, 480))
         clock = pygame.time.Clock()
@@ -117,10 +122,10 @@ class Board:
 
 class Player:
     def __init__(self):
-        self.image_o = pygame.image.load("image_x_v2.bmp")
+        self.image_o = pygame.image.load("image_o_v2.bmp")
         self.image_o_rect = self.image_o.get_rect()
-        self.playertwo_image = pygame.image.load("image_o_v2.bmp")
-        self.playertwo_rect = self.playertwo_image.get_rect()
+        self.image_x = pygame.image.load("image_x_v2.bmp")
+        self.image_x_rect = self.image_x.get_rect()
 
     def get_name(self):
         self.playerone_name = input("Please enter your name:\n")
