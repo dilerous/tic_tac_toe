@@ -34,7 +34,6 @@ class Game:
             icon = 'o'
         self.board_cords[box] = icon
         self.check_win()
-        self.display_text()
 
     def check_win(self):
         for condition in self.win_condition:
@@ -94,9 +93,9 @@ class Board:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Tic Tac Toe")
-        font = pygame.font.SysFont('freesansbold.tff', 30)
-        self.text = font.render(message, 1, (255, 255, 255))
-        self.text_rect = text.get_rect(center =(width / 2, 500-50))
+#        font = pygame.font.SysFont('freesansbold.tff', 30)
+#        self.text = font.render(message, 1, (255, 255, 255))
+#        self.text_rect = text.get_rect(center =(width / 2, 500-50))
         # Craigs code example
         self.screen = pygame.display.set_mode((640, 480))
         clock = pygame.time.Clock()
