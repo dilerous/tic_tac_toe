@@ -1,4 +1,4 @@
-import pygame
+import pygame, redis, uuid, random
 from pygame.locals import *
 print(pygame.version.ver)
 
@@ -7,8 +7,10 @@ class Game:
         self.board = Board()
         self.playerone = Player()
         self.playertwo = Player()
+        self.redis = Redisdb()
         self.turn_count = 0
         self.did_win = False
+        self.game_id = uuid.uuid4()
         self.board_cords = list(range(0,9))
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
                               slice(1,9,3), slice(2,9,3), slice(0,9,4),
@@ -125,11 +127,23 @@ class Player:
         self.image_o_rect = self.image_o.get_rect()
         self.image_x = pygame.image.load("image_x_v2.bmp")
         self.image_x_rect = self.image_x.get_rect()
+        self.player_id = uuid.uuid4()
 
     def get_name(self):
         self.playerone_name = input("Please enter your name:\n")
 
+class Redisdb:
+    def __init__(self):
+        self.random_num = random.randint(16,999)
+        self.r = redis.Redis(db=self.random_num)
+        print(self.r)
+
+    def get_num_db(self):
+        r = redis.StrictRedis()
+        number = r.config_get('databases')
+        return number['databases']
 
 if __name__ == '__main__':
     game = Game()
     game.run()
+
