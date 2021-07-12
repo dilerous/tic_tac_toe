@@ -4,17 +4,18 @@ print(pygame.version.ver)
 
 class Game:
     def __init__(self):
-        self.board = Board()
-        self.playerone = Player()
-        self.playertwo = Player()
-        self.redis = Redisdb()
+        self.game_id = uuid.uuid4()
         self.turn_count = 0
         self.did_win = False
-        self.game_id = uuid.uuid4()
-        self.board_cords = list(range(0,9))
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
                               slice(1,9,3), slice(2,9,3), slice(0,9,4),
                               slice(2,8,2)]
+        self.board_cords = list(range(0,9))
+        self.board = Board()
+        self.playerone = Player()
+        self.playertwo = Player()
+        self.redis = Redisdb(self.game_id, self.playerone.player_id,
+                             self.playertwo.player_id)
 
     def turn(self):
         self.turn_count+=1
@@ -95,10 +96,6 @@ class Board:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Tic Tac Toe")
-#        font = pygame.font.SysFont('freesansbold.tff', 30)
-#        self.text = font.render(message, 1, (255, 255, 255))
-#        self.text_rect = text.get_rect(center =(width / 2, 500-50))
-        # Craigs code example
         self.screen = pygame.display.set_mode((640, 480))
         clock = pygame.time.Clock()
         BG_COLOR = pygame.Color('gray12')
@@ -133,15 +130,28 @@ class Player:
         self.playerone_name = input("Please enter your name:\n")
 
 class Redisdb:
-    def __init__(self):
+    def __init__(self, game_id, pone_id, ptwo_id):
         self.random_num = random.randint(16,999)
-        self.r = redis.Redis(db=self.random_num)
-        print(self.r)
+        self.db = redis.Redis(db=self.random_num)
+        self.data = {self.db: {}}
+        game_id = self.set_key('game_id', game_id)
+        pone_id = self.set_key('playerone_id', pone_id)
+        ptwo_id = self.set_key('playertwo_id', ptwo_id)
+        print(self.db)
 
-    def get_num_db(self):
-        r = redis.StrictRedis()
-        number = r.config_get('databases')
-        return number['databases']
+    def get_key(self, key):
+        """Gets the value associated with a key"""
+        print(self.data.get(self.db, {}).get(key))
+        return self.data.get(self.db, {}).get(key)
+    def set_key(self, key, value):
+        """Sets a key-to-value association"""
+        self.data[self.db][key] = value
+        print(self.data)
+        return True
+    def delete_key(self, key):
+        """Deletes a key"""
+        del self.data[self.db][key]
+        return True
 
 if __name__ == '__main__':
     game = Game()
