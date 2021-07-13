@@ -167,6 +167,14 @@ class Redisdb:
         return self.db.get(key)
         return True
 
+    def create_list(self, list_values):
+        self.db.lpush('board_state', list_values)
+        return True
+
+    def update_list(self, index, value):
+        self.db.lset('board_state', index, value)
+        return True
+
 if __name__ == '__main__':
     game = Game()
     game.run()
