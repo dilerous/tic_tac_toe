@@ -4,7 +4,7 @@ print(pygame.version.ver)
 
 class Game:
     def __init__(self):
-        self.game_id = uuid.uuid4()
+        self.game_id = str(uuid.uuid4())
         self.turn_count = 0
         self.did_win = False
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
@@ -124,7 +124,7 @@ class Player:
         self.image_o_rect = self.image_o.get_rect()
         self.image_x = pygame.image.load("image_x_v2.bmp")
         self.image_x_rect = self.image_x.get_rect()
-        self.player_id = uuid.uuid4()
+        self.player_id = str(uuid.uuid4())
 
     def get_name(self):
         self.playerone_name = input("Please enter your name:\n")
@@ -132,25 +132,26 @@ class Player:
 class Redisdb:
     def __init__(self, game_id, pone_id, ptwo_id):
         self.random_num = random.randint(16,999)
-        self.db = redis.Redis(db=self.random_num)
+        self.db = redis.Redis()
         self.data = {self.db: {}}
-        game_id = self.set_key('game_id', game_id)
-        pone_id = self.set_key('playerone_id', pone_id)
-        ptwo_id = self.set_key('playertwo_id', ptwo_id)
+        self.set_key('game_id', game_id)
+        self.set_key('playerone_id', pone_id)
+        self.set_key('playertwo_id', ptwo_id)
         print(self.db)
 
-    def get_key(self, key):
-        """Gets the value associated with a key"""
-        print(self.data.get(self.db, {}).get(key))
-        return self.data.get(self.db, {}).get(key)
-    def set_key(self, key, value):
-        """Sets a key-to-value association"""
-        self.data[self.db][key] = value
-        print(self.data)
-        return True
+
     def delete_key(self, key):
         """Deletes a key"""
-        del self.data[self.db][key]
+        self.db.delete(key)
+        return True
+
+    def set_key(self, key, value):
+        self.db.mset({key: value})
+        return True
+
+    def get_key(self, key):
+        self.db.get(key)
+        return self.db.get(key)
         return True
 
 if __name__ == '__main__':
