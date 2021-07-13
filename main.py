@@ -25,6 +25,19 @@ class Game:
     def game_over(self):
         return true
         pass
+    def createlist(self):
+        list1 = self.board_cords
+        list2 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+        res = []
+        for idx in range(0, len(test_list1)):
+            res.append(list2[idx])
+            res.append(list1[idx])
+        print(res)
+        self.convert(res)
+
+    def convert(self, lst):
+        res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+        return res_dct
 
     def display_text(self):
         self.board.screen.blit(self.board.text, self.board.text_rect)
