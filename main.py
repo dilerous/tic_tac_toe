@@ -49,6 +49,9 @@ class Game:
         else:
             icon = 'o'
         self.board_cords[box] = icon
+        self.redis.update_list(box, icon)
+        print(box)
+        print(icon)
         self.check_win()
 
     def check_win(self):
@@ -145,7 +148,6 @@ class Player:
 class Redisdb:
     def __init__(self, game_id, pone_id, ptwo_id, board_state):
         self.db = redis.Redis()
-        self.data = {self.db: {}}
         self.board_state = self.create_list(board_state)
         self.set_key('game_id', game_id)
         self.set_key('playerone_id', pone_id)
@@ -168,7 +170,8 @@ class Redisdb:
         return True
 
     def create_list(self, list_values):
-        for item in list_values:
+        list_reversed = list_values.reverse()
+        for item in list_reversed:
             self.db.lpush('board_state', str(item))
         return True
 
