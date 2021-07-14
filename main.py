@@ -15,7 +15,7 @@ class Game:
         self.playerone = Player()
         self.playertwo = Player()
         self.redis = Redisdb(self.game_id, self.playerone.player_id,
-                             self.playertwo.player_id)
+                             self.playertwo.player_id, self.board_cords)
 
     def turn(self):
         self.turn_count+=1
@@ -143,10 +143,10 @@ class Player:
         self.playerone_name = input("Please enter your name:\n")
 
 class Redisdb:
-    def __init__(self, game_id, pone_id, ptwo_id):
-        self.random_num = random.randint(16,999)
+    def __init__(self, game_id, pone_id, ptwo_id, board_state):
         self.db = redis.Redis()
         self.data = {self.db: {}}
+        self.board_state = self.create_list(board_state)
         self.set_key('game_id', game_id)
         self.set_key('playerone_id', pone_id)
         self.set_key('playertwo_id', ptwo_id)
