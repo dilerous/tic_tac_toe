@@ -122,8 +122,10 @@ class Board:
         third_width = (640-(buffer_px*2))//3
         third_height = (480-(buffer_px*2))//3
         box_size = third_width, third_height
-        width_points = [buffer_px, third_width+buffer_px, (third_width*2)+buffer_px]
-        height_points = [buffer_px, third_height+buffer_px, (third_height*2)+buffer_px]
+        width_points = [buffer_px, third_width+buffer_px,
+                        (third_width*2)+buffer_px]
+        height_points = [buffer_px, third_height+buffer_px,
+                         (third_height*2)+buffer_px]
         for hp in height_points:
             for wp in width_points:
                 points.append((wp, hp))
@@ -154,7 +156,6 @@ class Redisdb:
         self.set_key('playertwo_id', ptwo_id)
         print(self.db)
 
-
     def delete_key(self, key):
         """Deletes a key"""
         self.db.delete(key)
@@ -170,8 +171,7 @@ class Redisdb:
         return True
 
     def create_list(self, list_values):
-        list_reversed = list_values.reverse()
-        for item in list_reversed:
+        for item in reversed(list_values):
             self.db.lpush('board_state', str(item))
         return True
 
