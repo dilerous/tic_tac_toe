@@ -168,7 +168,8 @@ class Redisdb:
         return True
 
     def create_list(self, list_values):
-        self.db.lpush('board_state', list_values)
+        for item in list_values:
+            self.db.lpush('board_state', str(item))
         return True
 
     def update_list(self, index, value):
