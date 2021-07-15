@@ -26,6 +26,7 @@ class Game:
         return true
         pass
     def createlist(self):
+        #Unused at this point
         list1 = self.board_cords
         list2 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
         res = []
@@ -36,6 +37,7 @@ class Game:
         self.convert(res)
 
     def convert(self, lst):
+        #Unused at this point
         res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
         return res_dct
 
@@ -50,8 +52,6 @@ class Game:
             icon = 'o'
         self.board_cords[box] = icon
         self.redis.update_list(box, icon)
-        print(box)
-        print(icon)
         self.check_win()
 
     def check_win(self):
@@ -143,9 +143,20 @@ class Player:
         self.image_x = pygame.image.load("image_x_v2.bmp")
         self.image_x_rect = self.image_x.get_rect()
         self.player_id = str(uuid.uuid4())
+        self.player_image = None
 
     def get_name(self):
         self.playerone_name = input("Please enter your name:\n")
+
+    def set_image(self):
+        self.x_or_o = input("Do you want to be X or O")
+        if self.x_or_o == 'x' or 'X':
+            self.player_image = self.image_x
+        else:
+            self.player_image = self.image_o
+
+
+
 
 class Redisdb:
     def __init__(self, game_id, pone_id, ptwo_id, board_state):
@@ -157,7 +168,6 @@ class Redisdb:
         print(self.db)
 
     def delete_key(self, key):
-        """Deletes a key"""
         self.db.delete(key)
         return True
 
