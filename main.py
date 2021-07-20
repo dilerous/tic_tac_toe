@@ -16,6 +16,8 @@ class Game:
         self.playertwo = Player()
         self.redis = Redisdb(self.game_id, self.playerone.player_id,
                              self.playertwo.player_id, self.board_cords)
+#        self.playerone.get_name()
+#        self.playerone.set_image()
 
     def turn(self):
         self.turn_count+=1
@@ -146,16 +148,16 @@ class Player:
         self.player_image = None
 
     def get_name(self):
-        self.playerone_name = input("Please enter your name:\n")
+        self.player_name = input("Please enter your name:\n")
 
     def set_image(self):
-        self.x_or_o = input("Do you want to be X or O")
+        self.x_or_o = input("Do you want to be X or O:\n")
         if self.x_or_o == 'x' or 'X':
             self.player_image = self.image_x
+            Game.self.redis.set_key(self, 'playerone_image', 'x')
         else:
             self.player_image = self.image_o
-
-
+            Game.self.redis.set_key(self, 'playerone_image', 'o')
 
 
 class Redisdb:
@@ -189,7 +191,11 @@ class Redisdb:
         self.db.lset('board_state', index, value)
         return True
 
-if __name__ == '__main__':
+def main():
+    print("Starting the game, good luck!")
     game = Game()
     game.run()
+
+if __name__ == '__main__':
+    main()
 
