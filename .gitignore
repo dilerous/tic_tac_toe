@@ -1,3 +1,4 @@
 ./venv
 .DS_Store
 craig_example.py
+__pycache__
