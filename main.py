@@ -1,9 +1,57 @@
-import pygame, redis, uuid, random
+import pygame, redis, uuid, logging
 from pygame.locals import *
+from os import getenv
 print(pygame.version.ver)
 
-class Game:
-    def __init__(self):
+
+def get_logger(name):
+    logger = logging.getLogger(name)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+                '%(asctime)s %(name)-6s %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(getenv("LOG_LEVEL", "INFO"))
+    return logger
+
+tick_tac_logger = get_logger('tick_tac')
+
+
+class Redisdb:
+    def __init__(self, game_id, pone_id, ptwo_id, board_state):
+        tick_tac_logger.debug("__init__ method of Redisdb")
+        self.db = redis.Redis()
+        self.board_state = self.create_list(board_state)
+        self.set_key('game_id', game_id)
+        self.set_key('playerone_id', pone_id)
+        self.set_key('playertwo_id', ptwo_id)
+        print(self.db)
+
+    def delete_key(self, key):
+        self.db.delete(key)
+        return True
+
+    def set_key(self, key, value):
+        self.db.mset({key: value})
+        return True
+
+    def get_key(self, key):
+        self.db.get(key)
+        return self.db.get(key)
+        return True
+
+    def create_list(self, list_values):
+        for item in reversed(list_values):
+            self.db.lpush('board_state', str(item))
+        return True
+
+    def update_list(self, index, value):
+        self.db.lset('board_state', index, value)
+        return True
+
+
+class Game(Redisdb):
+    def __init__(self, **kwargs):
         self.game_id = str(uuid.uuid4())
         self.turn_count = 0
         self.did_win = False
@@ -12,10 +60,10 @@ class Game:
                               slice(2,8,2)]
         self.board_cords = list(range(0,9))
         self.board = Board()
-        self.playerone = Player()
-        self.playertwo = Player()
-        self.redis = Redisdb(self.game_id, self.playerone.player_id,
-                             self.playertwo.player_id, self.board_cords)
+        self.player0 = kwargs.get('player0', '')
+        self.player1 = kwargs.get('player1', '')
+        super().__init__(self.game_id, self.player0, self.player1,
+                         self.board_cords)
 #        self.playerone.get_name()
 #        self.playerone.set_image()
 
@@ -146,6 +194,7 @@ class Player:
         self.image_x_rect = self.image_x.get_rect()
         self.player_id = str(uuid.uuid4())
         self.player_image = None
+        self.name = 'Brad'
 
     def get_name(self):
         self.player_name = input("Please enter your name:\n")
@@ -160,41 +209,13 @@ class Player:
             Game.self.redis.set_key(self, 'playerone_image', 'o')
 
 
-class Redisdb:
-    def __init__(self, game_id, pone_id, ptwo_id, board_state):
-        self.db = redis.Redis()
-        self.board_state = self.create_list(board_state)
-        self.set_key('game_id', game_id)
-        self.set_key('playerone_id', pone_id)
-        self.set_key('playertwo_id', ptwo_id)
-        print(self.db)
-
-    def delete_key(self, key):
-        self.db.delete(key)
-        return True
-
-    def set_key(self, key, value):
-        self.db.mset({key: value})
-        return True
-
-    def get_key(self, key):
-        self.db.get(key)
-        return self.db.get(key)
-        return True
-
-    def create_list(self, list_values):
-        for item in reversed(list_values):
-            self.db.lpush('board_state', str(item))
-        return True
-
-    def update_list(self, index, value):
-        self.db.lset('board_state', index, value)
-        return True
-
 def main():
     print("Starting the game, good luck!")
-    game = Game()
+    player0 = Player()
+    player1 = Player()
+    game = Game(player0=player0.name, player1=player1.name)
     game.run()
+
 
 if __name__ == '__main__':
     main()
