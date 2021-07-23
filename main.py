@@ -43,7 +43,6 @@ class Redisdb:
 
     def create_list(self, list_values):
         tick_tac_logger.debug("create_list method of Redisdb")
-        self.db.mset({key: value})
         for item in reversed(list_values):
             self.db.lpush('board_state', str(item))
         return True
