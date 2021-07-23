@@ -141,6 +141,7 @@ class Game(Redisdb):
 
 
     def new_win(self):
+        # cleanup
         self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
                         (10, self.board.height//1.25), (self.board.height//5, 10),
                         (self.board.height//2, 10), (self.board.height//1.25, 10),
@@ -164,6 +165,10 @@ class Board:
         pygame.display.set_caption("Tic Tac Toe")
         self.screen = pygame.display.set_mode((640, 480))
         clock = pygame.time.Clock()
+        self.image_o = pygame.image.load("image_o_v2.bmp")
+        self.image_o_rect = self.image_o.get_rect()
+        self.image_x = pygame.image.load("image_x_v2.bmp")
+        self.image_x_rect = self.image_x.get_rect()
         BG_COLOR = pygame.Color('gray12')
         self.screen.fill(BG_COLOR)
         self.boxes = []
@@ -189,10 +194,6 @@ class Board:
 class Player:
     def __init__(self):
         tick_tac_logger.debug("__init__ method of Player")
-        self.image_o = pygame.image.load("image_o_v2.bmp")
-        self.image_o_rect = self.image_o.get_rect()
-        self.image_x = pygame.image.load("image_x_v2.bmp")
-        self.image_x_rect = self.image_x.get_rect()
         self.player_id = str(uuid.uuid4())
         self.player_image = None
         self.name = None
@@ -206,12 +207,13 @@ class Player:
     def set_image(self):
         tick_tac_logger.debug("set_image method of Player")
         self.x_or_o = input("Do you want to be X or O:\n")
-        if self.x_or_o == 'x' or 'X':
-            self.player_image = self.image_x
-            Game.self.redis.set_key(self, 'playerone_image', 'x')
-        else:
-            self.player_image = self.image_o
-            Game.self.redis.set_key(self, 'playerone_image', 'o')
+        if not self.player_image:
+            if self.x_or_o == 'x' or 'X':
+                self.player_image = self.image_x
+                Game.self.redis.set_key(self, 'playerone_image', 'x')
+            else:
+                self.player_image = self.image_o
+                Game.self.redis.set_key(self, 'playerone_image', 'o')
 
 
 def main():
