@@ -63,9 +63,9 @@ class Game(Redisdb):
                               slice(2,8,2)]
         self.board_cords = list(range(0,9))
         self.board = Board()
-        self.player0 = kwargs.get('player0', '')
-        self.player1 = kwargs.get('player1', '')
-        super().__init__(self.game_id, self.player0, self.player1,
+        self.player0_uuid = kwargs.get('player0', '')
+        self.player1_uuid = kwargs.get('player1', '')
+        super().__init__(self.game_id, self.player0_uuid, self.player1_uuid,
                          self.board_cords)
 
     def turn(self):
@@ -109,6 +109,7 @@ class Game(Redisdb):
                 win_index = self.win_condition.index(condition)
             elif len(set(self.board_cords[condition])) > 1 and self.turn_count == 9:
                 print("There was a tie, try again!")
+
 
     def run(self):
         tick_tac_logger.debug("run method of Game")
@@ -204,24 +205,13 @@ class Player:
         if not self.name:
             self.name = input("Please enter your name:\n")
 
-    def set_image(self):
-        tick_tac_logger.debug("set_image method of Player")
-        self.x_or_o = input("Do you want to be X or O:\n")
-        if not self.player_image:
-            if self.x_or_o == 'x' or 'X':
-                self.player_image = self.image_x
-                Game.self.redis.set_key(self, 'playerone_image', 'x')
-            else:
-                self.player_image = self.image_o
-                Game.self.redis.set_key(self, 'playerone_image', 'o')
-
 
 def main():
     tick_tac_logger.debug("In method of main")
     print("Starting the game, good luck!")
     player0 = Player()
     player1 = Player()
-    game = Game(player0=player0.name, player1=player1.name)
+    game = Game(player0=player0.player_id, player1=player1.player_id)
     game.run()
 
 
