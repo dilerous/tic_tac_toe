@@ -32,6 +32,7 @@ class Redisdb:
         return True
 
     def set_key(self, key, value):
+        tick_tac_logger.debug("set_key method of Redisdb")
         self.db.mset({key: value})
         return True
 
@@ -41,11 +42,14 @@ class Redisdb:
         return True
 
     def create_list(self, list_values):
+        tick_tac_logger.debug("create_list method of Redisdb")
+        self.db.mset({key: value})
         for item in reversed(list_values):
             self.db.lpush('board_state', str(item))
         return True
 
     def update_list(self, index, value):
+        tick_tac_logger.debug("update_list method of Redisdb")
         self.db.lset('board_state', index, value)
         return True
 
@@ -64,17 +68,12 @@ class Game(Redisdb):
         self.player1 = kwargs.get('player1', '')
         super().__init__(self.game_id, self.player0, self.player1,
                          self.board_cords)
-#        self.playerone.get_name()
-#        self.playerone.set_image()
 
     def turn(self):
         self.turn_count+=1
         if (self.turn_count % 2) == 0:
             return True
 
-    def game_over(self):
-        return true
-        pass
     def createlist(self):
         #Unused at this point
         list1 = self.board_cords
@@ -113,6 +112,7 @@ class Game(Redisdb):
                 print("There was a tie, try again!")
 
     def run(self):
+        tick_tac_logger.debug("run method of Game")
         while not self.did_win:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
@@ -160,6 +160,7 @@ class Game(Redisdb):
 
 class Board:
     def __init__(self):
+        tick_tac_logger.debug("__init__ method of Player")
         pygame.init()
         pygame.display.set_caption("Tic Tac Toe")
         self.screen = pygame.display.set_mode((640, 480))
@@ -188,18 +189,23 @@ class Board:
 
 class Player:
     def __init__(self):
+        tick_tac_logger.debug("__init__ method of Player")
         self.image_o = pygame.image.load("image_o_v2.bmp")
         self.image_o_rect = self.image_o.get_rect()
         self.image_x = pygame.image.load("image_x_v2.bmp")
         self.image_x_rect = self.image_x.get_rect()
         self.player_id = str(uuid.uuid4())
         self.player_image = None
-        self.name = 'Brad'
+        self.name = None
+        self.get_name()
 
     def get_name(self):
-        self.player_name = input("Please enter your name:\n")
+        tick_tac_logger.debug("get_name method of Player")
+        if not self.name:
+            self.name = input("Please enter your name:\n")
 
     def set_image(self):
+        tick_tac_logger.debug("set_image method of Player")
         self.x_or_o = input("Do you want to be X or O:\n")
         if self.x_or_o == 'x' or 'X':
             self.player_image = self.image_x
@@ -210,6 +216,7 @@ class Player:
 
 
 def main():
+    tick_tac_logger.debug("In method of main")
     print("Starting the game, good luck!")
     player0 = Player()
     player1 = Player()
