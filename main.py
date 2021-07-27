@@ -14,6 +14,7 @@ def get_logger(name):
     logger.setLevel(getenv("LOG_LEVEL", "INFO"))
     return logger
 
+
 tick_tac_logger = get_logger('tick_tac')
 
 
@@ -65,13 +66,19 @@ class Game(Redisdb):
         self.board = Board()
         self.player0_uuid = kwargs.get('player0', '')
         self.player1_uuid = kwargs.get('player1', '')
+        self.who_turn = ''
         super().__init__(self.game_id, self.player0_uuid, self.player1_uuid,
                          self.board_cords)
 
     def turn(self):
         self.turn_count+=1
         if (self.turn_count % 2) == 0:
+            self.who_turn = 'player0'
+            self.set_key('who_turn', self.who_turn)
             return True
+        else:
+            self.who_turn = 'player1'
+            self.set_key('who_turn', self.who_turn)
 
     def createlist(self):
         #Unused at this point
@@ -192,11 +199,11 @@ class Board:
             pygame.draw.rect(self.screen, (0, 100, 255), box, 2)
         pygame.display.flip()
 
+
 class Player:
     def __init__(self):
         tick_tac_logger.debug("__init__ method of Player")
         self.player_id = str(uuid.uuid4())
-        self.player_image = None
         self.name = None
         self.get_name()
 
@@ -204,6 +211,9 @@ class Player:
         tick_tac_logger.debug("get_name method of Player")
         if not self.name:
             self.name = input("Please enter your name:\n")
+
+    def set_player_num(self):
+        pass
 
 
 def main():
