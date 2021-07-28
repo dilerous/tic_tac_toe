@@ -56,6 +56,7 @@ class Redisdb:
 
 class Game(Redisdb):
     def __init__(self, **kwargs):
+        tick_tac_logger.debug("__init__ method of Game")
         self.game_id = str(uuid.uuid4())
         self.turn_count = 0
         self.did_win = False
@@ -65,12 +66,15 @@ class Game(Redisdb):
         self.board_cords = list(range(0,9))
         self.board = Board()
         self.player0_uuid = kwargs.get('player0', '')
+        self.player0_name = kwargs.get('player0_name', '')
         self.player1_uuid = kwargs.get('player1', '')
+        self.player1_name = kwargs.get('player1_name', '')
         self.who_turn = ''
         super().__init__(self.game_id, self.player0_uuid, self.player1_uuid,
                          self.board_cords)
 
     def turn(self):
+        tick_tac_logger.debug("turn method of Game")
         self.turn_count+=1
         if (self.turn_count % 2) == 0:
             self.who_turn = 'player0'
@@ -79,6 +83,7 @@ class Game(Redisdb):
         else:
             self.who_turn = 'player1'
             self.set_key('who_turn', self.who_turn)
+            return False
 
     def createlist(self):
         #Unused at this point
@@ -131,12 +136,15 @@ class Game(Redisdb):
                     mouse_position = pygame.mouse.get_pos()
                     for item in self.board.boxes:
                         if item.collidepoint(mouse_position):
-                            self.playerone.image_o_rect.center = item.center
-                            self.board.screen.blit(self.playerone.image_o,
-                                                   self.playerone.image_o_rect)
-                            self.update_cords(self.board.boxes.index(item))
-                            print(self.playerone.image_o_rect.center)
-                            pygame.display.flip()
+                            if self.turn():
+                                self.board.image_o_rect.center = item.center
+                                self.board.screen.blit(self.board.image_o,
+                                                       self.board.image_o_rect)
+                                self.update_cords(self.board.boxes.index(item))
+                                print(self.playerone.image_o_rect.center)
+                                pygame.display.flip()
+                            else:
+                                print(f"{self.turn()} is False")
 
 
     def draw_win_line(self, condition):
@@ -221,7 +229,8 @@ def main():
     print("Starting the game, good luck!")
     player0 = Player()
     player1 = Player()
-    game = Game(player0=player0.player_id, player1=player1.player_id)
+    game = Game(player0=player0.player_id, player1=player1.player_id,
+                player0_name=player0.name, player1_name=player1.name)
     game.run()
 
 
