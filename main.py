@@ -77,10 +77,12 @@ class Game(Redisdb):
         tick_tac_logger.debug("turn method of Game")
         self.turn_count+=1
         if (self.turn_count % 2) == 0:
+            tick_tac_logger.debug(f"In if statement of turn {self.turn_count}")
             self.who_turn = 'player0'
             self.set_key('who_turn', self.who_turn)
             return True
-        else:
+        if not (self.turn_count % 2) == 0:
+            tick_tac_logger.debug(f"In else statement of turn {self.turn_count}")
             self.who_turn = 'player1'
             self.set_key('who_turn', self.who_turn)
             return False
@@ -135,15 +137,24 @@ class Game(Redisdb):
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse_position = pygame.mouse.get_pos()
                     for item in self.board.boxes:
+                        tick_tac_logger.debug(f"run for item loop {item}")
                         if item.collidepoint(mouse_position):
-                            if self.turn():
-                                self.board.image_o_rect.center = item.center
-                                self.board.screen.blit(self.board.image_o,
-                                                       self.board.image_o_rect)
+                            if self.turn() is True:
+                                tick_tac_logger.debug("if statement of run method")
+#                                self.board.image_o_rect.center = item.center
+#                                self.board.screen.blit(self.board.image_o,
+#                                                       self.board.image_o_rect)
                                 self.update_cords(self.board.boxes.index(item))
-                                print(self.playerone.image_o_rect.center)
                                 pygame.display.flip()
-                            else:
+                                print(self.board.image_o_rect.center)
+                            if self.turn() is False:
+                                tick_tac_logger.debug("else statement of run method")
+#                                self.board.image_x_rect.center = item.center
+#                                self.board.screen.blit(self.board.image_x,
+#                                                       self.board.image_x_rect)
+                                self.update_cords(self.board.boxes.index(item))
+                                pygame.display.flip()
+                                print(self.turn_count)
                                 print(f"{self.turn()} is False")
 
 
