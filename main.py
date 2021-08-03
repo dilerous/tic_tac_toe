@@ -19,14 +19,17 @@ tick_tac_logger = get_logger('tick_tac')
 
 
 class Redisdb:
-    def __init__(self, game_id, pone_id, ptwo_id, board_state):
+    def __init__(self, **kwargs):
         tick_tac_logger.debug("__init__ method of Redisdb")
         self.db = redis.Redis()
-        self.board_state = self.create_list(board_state)
-        self.set_key('game_id', game_id)
-        self.set_key('playerone_id', pone_id)
-        self.set_key('playertwo_id', ptwo_id)
-        print(self.db)
+        self.playerone_id = kwargs.get('playerone_id')
+        self.playertwo_id = kwargs.get('playertwo_id')
+        self.game_id = kwargs.get('game_id')
+        self.state = kwargs.get('board_state')
+        self.board_state = self.create_list(self.state)
+        self.set_key('game_id', self.game_id)
+        self.set_key('playerone_id', self.playerone_id)
+        self.set_key('playertwo_id', self.playertwo_id)
 
     def delete_key(self, key):
         self.db.delete(key)
@@ -60,6 +63,7 @@ class Game(Redisdb):
         self.game_id = str(uuid.uuid4())
         self.turn_count = 0
         self.did_win = False
+        self.who_turn = ''
         self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
                               slice(1,9,3), slice(2,9,3), slice(0,9,4),
                               slice(2,8,2)]
@@ -69,9 +73,9 @@ class Game(Redisdb):
         self.player0_name = kwargs.get('player0_name', '')
         self.player1_uuid = kwargs.get('player1', '')
         self.player1_name = kwargs.get('player1_name', '')
-        self.who_turn = ''
-        super().__init__(self.game_id, self.player0_uuid, self.player1_uuid,
-                         self.board_cords)
+        super().__init__(game_id=self.game_id, playerone_id=self.player0_uuid,
+                         playertwo_id=self.player1_uuid,
+                         board_state=self.board_cords)
 
     def turn(self):
         tick_tac_logger.debug("turn method of Game")
@@ -124,6 +128,9 @@ class Game(Redisdb):
             elif len(set(self.board_cords[condition])) > 1 and self.turn_count == 9:
                 print("There was a tie, try again!")
 
+    def new_run(self):
+        pass
+
 
     def run(self):
         tick_tac_logger.debug("run method of Game")
@@ -139,24 +146,7 @@ class Game(Redisdb):
                     for item in self.board.boxes:
                         tick_tac_logger.debug(f"run for item loop {item}")
                         if item.collidepoint(mouse_position):
-                            if self.turn() is True:
-                                tick_tac_logger.debug("if statement of run method")
-#                                self.board.image_o_rect.center = item.center
-#                                self.board.screen.blit(self.board.image_o,
-#                                                       self.board.image_o_rect)
-                                self.update_cords(self.board.boxes.index(item))
-                                pygame.display.flip()
-                                print(self.board.image_o_rect.center)
-                            if self.turn() is False:
-                                tick_tac_logger.debug("else statement of run method")
-#                                self.board.image_x_rect.center = item.center
-#                                self.board.screen.blit(self.board.image_x,
-#                                                       self.board.image_x_rect)
-                                self.update_cords(self.board.boxes.index(item))
-                                pygame.display.flip()
-                                print(self.turn_count)
-                                print(f"{self.turn()} is False")
-
+                            pass
 
     def draw_win_line(self, condition):
         # Cleanup
@@ -165,7 +155,6 @@ class Game(Redisdb):
                             (condition[2][0], condition[2][1]),
                          self.board.line_width)
         pygame.display.flip()
-
 
     def new_win(self):
         # cleanup
