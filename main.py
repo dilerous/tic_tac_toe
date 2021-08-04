@@ -1,6 +1,7 @@
 import pygame, redis, uuid, logging
 from pygame.locals import *
 from os import getenv
+import client
 print(pygame.version.ver)
 
 

@@ -54,16 +54,16 @@ def me_api(name):
             "last_name": user.last_name
         }
     else:
-        return "go f urself"
+        return f"The name {name} was not found"
 
 
 @app.route("/players/<player>")
 def get_player(player):
     redis = main.Redisdb()
-    if player == 'playerone':
+    if player == 'player0':
         playerone = redis.get_key('playerone_id')
         return playerone
-    if player == 'playertwo':
+    if player == 'player1':
         playertwo = redis.get_key('playertwo_id')
         return playertwo
 
