@@ -86,6 +86,17 @@ def get_state():
     return board_state
 
 
+@app.route("/test")
+def test():
+    redis = main.Redisdb()
+    playerone = redis.get_key('playerone_id')
+    players = {"player_one": playerone
+               }
+    return players
+#    playertwo = str(redis.get_key('playertwo_id'))
+#               "player_two": playertwo
+
+
 def do_the_login():
     x = "Example of the POST"
     return x

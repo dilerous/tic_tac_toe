@@ -1,7 +1,6 @@
 import pygame, redis, uuid, logging
 from pygame.locals import *
 from os import getenv
-import client
 print(pygame.version.ver)
 
 
@@ -22,11 +21,13 @@ tick_tac_logger = get_logger('tick_tac')
 class Redisdb:
     def __init__(self, **kwargs):
         tick_tac_logger.debug("__init__ method of Redisdb")
-        self.db = redis.Redis()
+        self.db = redis.Redis(charset="utf-8", decode_responses=True)
         self.playerone_id = kwargs.get('playerone_id')
         self.playertwo_id = kwargs.get('playertwo_id')
         self.game_id = kwargs.get('game_id')
         self.state = kwargs.get('board_state')
+
+    def init_game(self):
         self.board_state = self.create_list(self.state)
         self.set_key('game_id', self.game_id)
         self.set_key('playerone_id', self.playerone_id)
@@ -57,6 +58,10 @@ class Redisdb:
         self.db.lset('board_state', index, value)
         return True
 
+    def get_list(self, value):
+        tick_tac_logger.debug("update_list method of Redisdb")
+        return self.db.lrange(value, 0, -1)
+
 
 class Game(Redisdb):
     def __init__(self, **kwargs):
@@ -65,10 +70,10 @@ class Game(Redisdb):
         self.turn_count = 0
         self.did_win = False
         self.who_turn = ''
-        self.win_condition = [ slice(0,3), slice(3,6), slice(6,9), slice(0,9,3),
-                              slice(1,9,3), slice(2,9,3), slice(0,9,4),
-                              slice(2,8,2)]
-        self.board_cords = list(range(0,9))
+        self.win_condition = [slice(0, 3), slice(3, 6), slice(6, 9),
+                              slice(0, 9, 3), slice(1, 9, 3), slice(2, 9, 3),
+                              slice(0, 9, 4), slice(2, 8, 2)]
+        self.board_cords = list(range(0, 9))
         self.board = Board()
         self.player0_uuid = kwargs.get('player0', '')
         self.player0_name = kwargs.get('player0_name', '')
@@ -80,20 +85,21 @@ class Game(Redisdb):
 
     def turn(self):
         tick_tac_logger.debug("turn method of Game")
-        self.turn_count+=1
+        self.turn_count += 1
         if (self.turn_count % 2) == 0:
             tick_tac_logger.debug(f"In if statement of turn {self.turn_count}")
             self.who_turn = 'player0'
             self.set_key('who_turn', self.who_turn)
             return True
         if not (self.turn_count % 2) == 0:
-            tick_tac_logger.debug(f"In else statement of turn {self.turn_count}")
+            tick_tac_logger.debug(
+                f"In else statement of turn {self.turn_count}")
             self.who_turn = 'player1'
             self.set_key('who_turn', self.who_turn)
             return False
 
     def createlist(self):
-        #Unused at this point
+        # Unused at this point
         list1 = self.board_cords
         list2 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
         res = []
@@ -104,7 +110,7 @@ class Game(Redisdb):
         self.convert(res)
 
     def convert(self, lst):
-        #Unused at this point
+        # Unused at this point
         res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
         return res_dct
 
@@ -118,7 +124,7 @@ class Game(Redisdb):
         else:
             icon = 'o'
         self.board_cords[box] = icon
-        self.redis.update_list(box, icon)
+        self.update_list(box, icon)
         self.check_win()
 
     def check_win(self):
@@ -131,7 +137,6 @@ class Game(Redisdb):
 
     def new_run(self):
         pass
-
 
     def run(self):
         tick_tac_logger.debug("run method of Game")
@@ -147,13 +152,13 @@ class Game(Redisdb):
                     for item in self.board.boxes:
                         tick_tac_logger.debug(f"run for item loop {item}")
                         if item.collidepoint(mouse_position):
-                            pass
+                            self.update_cords(self.board.boxes.index(item))
 
     def draw_win_line(self, condition):
         # Cleanup
         pygame.draw.line(self.surface, self.board.win_color_line,
-                            (condition[1][0], condition[1][1]),
-                            (condition[2][0], condition[2][1]),
+                         (condition[1][0], condition[1][1]),
+                         (condition[2][0], condition[2][1]),
                          self.board.line_width)
         pygame.display.flip()
 
@@ -232,6 +237,7 @@ def main():
     player1 = Player()
     game = Game(player0=player0.player_id, player1=player1.player_id,
                 player0_name=player0.name, player1_name=player1.name)
+    game.init_game()
     game.run()
 
 
