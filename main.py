@@ -1,4 +1,7 @@
-import pygame, redis, uuid, logging
+import pygame
+import redis
+import uuid
+import logging
 from pygame.locals import *
 from os import getenv
 print(pygame.version.ver)
@@ -131,8 +134,9 @@ class Game(Redisdb):
         for condition in self.win_condition:
             if len(set(self.board_cords[condition])) == 1:
                 print("Winner!")
-                win_index = self.win_condition.index(condition)
-            elif len(set(self.board_cords[condition])) > 1 and self.turn_count == 9:
+#                win_index = self.win_condition.index(condition)
+            elif (len(set(self.board_cords[condition])) > 1
+                  and self.turn_count == 9):
                 print("There was a tie, try again!")
 
     def new_run(self):
@@ -164,18 +168,19 @@ class Game(Redisdb):
 
     def new_win(self):
         # cleanup
-        self.x_cords = [ (10, self.board.height//5), (10, self.board.height//2),
-                        (10, self.board.height//1.25), (self.board.height//5, 10),
-                        (self.board.height//2, 10), (self.board.height//1.25, 10),
-                        (10, 10),(10, self.board.height-10) ]
-        self.y_cords = [ (self.board.width-10, self.board.width//5),
+        self.x_cords = [(10, self.board.height//5), (10, self.board.height//2),
+                        (10, self.board.height//1.25),
+                        (self.board.height//5, 10), (self.board.height//2, 10),
+                        (self.board.height//1.25, 10), (10, 10),
+                        (10, self.board.height-10)]
+        self.y_cords = [(self.board.width-10, self.board.width//5),
                         (self.board.height-10, self.board.width//2),
                         (self.board.height-10, self.board.width//1.25),
                         (self.board.width//5, self.board.height-10),
                         (self.board.width//2, self.board.height-10),
                         (self.board.width//1.25, self.board.height-10),
                         (self.board.width-10, self.board.height-10),
-                        (self.board.width, 10) ]
+                        (self.board.width, 10)]
         self.win_with_cords = list(zip(self.win_condition,
                                        self.x_cords, self.y_cords))
 
@@ -186,7 +191,7 @@ class Board:
         pygame.init()
         pygame.display.set_caption("Tic Tac Toe")
         self.screen = pygame.display.set_mode((640, 480))
-        clock = pygame.time.Clock()
+#        clock = pygame.time.Clock()
         self.image_o = pygame.image.load("image_o_v2.bmp")
         self.image_o_rect = self.image_o.get_rect()
         self.image_x = pygame.image.load("image_x_v2.bmp")
@@ -243,4 +248,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
