@@ -1,10 +1,14 @@
-from flask import Flask
+from flask import Flask, render_template
+from flask_sse import sse
 from flask import request
 import logging
 from os import getenv
 import main
 
+
 app = Flask(__name__)
+app.config["REDIS_URL"] = "redis://localhost"
+app.register_blueprint(sse, url_prefix='/stream')
 
 
 def get_logger(name):
@@ -29,12 +33,13 @@ class User():
 
 @app.route("/")
 def index():
-    return "<p>Index Page!</p>"
+    return render_template("index.html")
 
 
 @app.route("/hello")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    sse.publish({"message": "Hello!"}, type='greeting')
+    return "Message sent!"
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -84,17 +89,6 @@ def get_state():
     redis = main.Redisdb()
     board_state = str(redis.get_list('board_state'))
     return board_state
-
-
-@app.route("/test")
-def test():
-    redis = main.Redisdb()
-    playerone = redis.get_key('playerone_id')
-    players = {"player_one": playerone
-               }
-    return players
-#    playertwo = str(redis.get_key('playertwo_id'))
-#               "player_two": playertwo
 
 
 def do_the_login():
