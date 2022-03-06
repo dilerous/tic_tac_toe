@@ -31,6 +31,38 @@ class User():
         self.last_name = 'Soper'
 
 
+class Flask_sse_message():
+    def __init__(self, data, type=None, id=None, retry=None):
+        self.data = data
+        pass
+
+    def to_string(self, data):
+        string_data = str(data)
+        return string_data
+
+    def to_dict(self, lst):
+        res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+        return res_dct
+        pass
+
+
+class Flask_sse_ServerSentEventsBlueprint():
+    def __init__(self):
+        pass
+
+    def messages(self, channel='sse'):
+        pass
+
+    def publish(self, data, type=None, id=None, retry=None, channel='sse'):
+        pass
+
+    def redis(self):
+        pass
+
+    def stream(self):
+        pass
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -38,7 +70,15 @@ def index():
 
 @app.route("/hello")
 def hello_world():
-    sse.publish({"message": "Hello!"}, type='greeting')
+    name = 'Brad'
+    sse.publish({"message": f"Hello! {name}"}, type='greeting')
+    return "Message sent!"
+
+
+@app.route("/game")
+def publish_redis():
+    name = 'Brad'
+    sse.publish({"message": f"Hello! {name}"}, type='greeting')
     return "Message sent!"
 
 
